@@ -2,8 +2,8 @@
 #include <stdexcept>
 #include <cstdlib>
 /**
- * @brief A class that functions as a smaple buffer.
- * @details You can use this to insert samples and use the get fuction to get a sample of the past.
+ * @brief A class that functions as a sample buffer.
+ * @details You can use this to insert samples and use the get function to get a sample of the past.
  *
  * @tparam type Type of sample or even object that needs to be stored.
  * @tparam size Size of how big the history buffer is.
@@ -20,7 +20,7 @@ private:
 };
 
 /**
- * @brief Constructor that initializeses that buffer and its set index.
+ * @brief Constructor that initializes that buffer and its set index.
  */
 template<typename type, size_t size>
 CircularDelay<type, size>::CircularDelay():index(size-1){
@@ -30,7 +30,7 @@ CircularDelay<type, size>::CircularDelay():index(size-1){
 }
 
 /**
- * @brief With this funtion you can insert a new sample into the buffer.
+ * @brief With this function you can insert a new sample into the buffer.
  *
  * @param input Sample to push into.
  */
@@ -41,8 +41,8 @@ void CircularDelay<type, size>::push(type input){
 }
 
 /**
- * @brief With this funtion you can retrieve a smaple from the past.
- * @details Maxinum delay is the size of the CircularDelay - 1.
+ * @brief With this function you can retrieve a sample from the past.
+ * @details Maximum delay is the size of the CircularDelay - 1.
  *
  * @param delay How many samples you ago you want to get.
  * @return The sample of delay ago.
