@@ -12,19 +12,195 @@ template<typename type, size_t size>
 class CircularDelay{
 public:
 	CircularDelay();
+	class iterator{
+	public:
+		typedef iterator self_type;
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef int difference_type;
+		iterator(const CircularDelay<type, size>::iterator& it):data_(it.data_), ptr_(it.ptr_){}
+		self_type operator++() {
+			if(++ptr_ == data_ + size + 1){
+				ptr_ = data_;
+			}
+			return *this;
+		}
+		self_type operator++(int) {self_type ret = *this; ++*this; return ret;}
+		self_type operator--() {
+			if(ptr_ == data_){
+				ptr_ = data_ + size;
+			}
+			else{
+				--ptr_;
+			}
+			return *this;
+		}
+		self_type operator--(int) {self_type ret = *this; --*this; return ret;}
+		type& operator*() { return *ptr_; }
+		type* operator->() { return ptr_; }
+		type& operator[](unsigned int index){
+			// Note that ptr_ - data_ is converting ptr_ to index value;
+			index += ptr_ - data_;
+			if(index >= size + 1){
+				index -= size + 1;
+			}
+			return data_[index];
+		}
+		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+	private:
+		iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		friend class CircularDelay;
+		type* data_ = nullptr;
+		type* ptr_ = nullptr;
+	};
+	class const_iterator{
+	public:
+		typedef const_iterator self_type;
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef int difference_type;
+		const_iterator(const CircularDelay<type, size>::const_iterator& it):data_(it.data_), ptr_(it.ptr_){}
+		self_type operator++() {
+			if(++ptr_ == data_ + size + 1){
+				ptr_ = data_;
+			}
+			return *this;
+		}
+		self_type operator++(int) {self_type ret = *this; ++*this; return ret;}
+		self_type operator--() {
+			if(ptr_ == data_){
+				ptr_ = data_ + size;
+			}
+			else{
+				--ptr_;
+			}
+			return *this;
+		}
+		self_type operator--(int) {self_type ret = *this; --*this; return ret;}
+		const type& operator*() { return *ptr_; }
+		const type* operator->() { return ptr_; }
+		const type& operator[](unsigned int index){
+			// Note that ptr_ - data_ is converting ptr_ to index value;
+			index += ptr_ - data_;
+			if(index >= size + 1){
+				index -= size + 1;
+			}
+			return data_[index];
+		}
+		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+	private:
+		const_iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		friend class CircularDelay;
+		type* data_ = nullptr;
+		type* ptr_ = nullptr;
+	};
+	class reverse_iterator{
+	public:
+		typedef reverse_iterator self_type;
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef int difference_type;
+		reverse_iterator(const CircularDelay<type, size>::reverse_iterator& it):data_(it.data_), ptr_(it.ptr_){}
+		self_type operator++() {
+			if(ptr_ == data_){
+				ptr_ = data_ + size;
+			}
+			else{
+				--ptr_;
+			}
+			return *this;
+		}
+		self_type operator++(int) {self_type ret = *this; ++*this; return ret;}
+		self_type operator--() {
+			if(++ptr_ == data_ + size + 1){
+				ptr_ = data_;
+			}
+			return *this;
+		}
+		self_type operator--(int) {self_type ret = *this; --*this; return ret;}
+		type& operator*() { return *ptr_; }
+		type* operator->() { return ptr_; }
+		type& operator[](int index){
+			// Convert ptr_ to index value;
+			index = ptr_ - data_ - index;
+			if(index < 0){
+				index += size + 1;
+			}
+			return data_[index];
+		}
+		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+	private:
+		reverse_iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		friend class CircularDelay;
+		type* data_ = nullptr;
+		type* ptr_ = nullptr;
+	};
+	class const_reverse_iterator{
+	public:
+		typedef const_reverse_iterator self_type;
+		typedef std::bidirectional_iterator_tag iterator_category;
+		typedef int difference_type;
+		const_reverse_iterator(const CircularDelay<type, size>::const_reverse_iterator& it):data_(it.data_), ptr_(it.ptr_){}
+		self_type operator++() {
+			if(ptr_ == data_){
+				ptr_ = data_ + size;
+			}
+			else{
+				--ptr_;
+			}
+			return *this;
+		}
+		self_type operator++(int) {self_type ret = *this; ++*this; return ret;}
+		self_type operator--() {
+			if(++ptr_ == data_ + size + 1){
+				ptr_ = data_;
+			}
+			return *this;
+		}
+		self_type operator--(int) {self_type ret = *this; --*this; return ret;}
+		const type& operator*() { return *ptr_; }
+		const type* operator->() { return ptr_; }
+		const type& operator[](int index){
+			// Convert ptr_ to index value;
+			index = ptr_ - data_ - index;
+			if(index < 0){
+				index += size + 1;
+			}
+			return data_[index];
+		}
+		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
+		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
+	private:
+		const_reverse_iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		friend class CircularDelay;
+		type* data_ = nullptr;
+		type* ptr_ = nullptr;
+	};
 	void push(type input);
 	type get(size_t delay);
+	iterator end(){return setIterator;}
+	iterator begin(){
+		iterator it(setIterator);
+		++it;
+		return it;
+	}
+	reverse_iterator rend(){return reverse_iterator(data, setIterator.ptr_);}
+	reverse_iterator rbegin(){
+		reverse_iterator it(data, setIterator.ptr_);
+		++it;
+		return it;
+	}
 private:
-	type data[size];
-	size_t index;
+	type data[size + 1];
+	iterator setIterator = iterator(data, data);
 };
 
 /**
  * @brief Constructor that initializes that buffer and its set index.
  */
 template<typename type, size_t size>
-CircularDelay<type, size>::CircularDelay():index(size-1){
-	for (size_t i = 0; i < size; ++i){
+CircularDelay<type, size>::CircularDelay(){
+	for (size_t i = 0; i < size + 1; ++i){
 		data[i] = 0;
 	}
 }
@@ -36,8 +212,8 @@ CircularDelay<type, size>::CircularDelay():index(size-1){
  */
 template<typename type, size_t size>
 void CircularDelay<type, size>::push(type input){
-	index = (index + 1) % size;
-	data[index] = input;
+	*setIterator = input;
+	setIterator++;
 }
 
 /**
@@ -49,7 +225,8 @@ void CircularDelay<type, size>::push(type input){
  */
 template<typename type, size_t size>
 type CircularDelay<type, size>::get(size_t delay){
-	if(delay >= size)
+	if(delay >= size + 1)
 		throw(std::domain_error("Tried to get a value that is longer ago than the size of a CircularDelay."));
-	return data[(index + size - delay) % size];
+	reverse_iterator itRBegin(rbegin());
+	return itRBegin[delay];
 }
