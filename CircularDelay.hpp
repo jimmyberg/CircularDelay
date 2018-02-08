@@ -1,12 +1,31 @@
-
+/**
+ * @copyright  GPL V3
+ *
+ * Circular delay software library. Here data can be stored and retrieved is a
+ * LiFo manner. Copyright (C) 2018 Jimmy van den Berg
+ *
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 #include <stdexcept>
 #include <cstdlib>
 /**
- * @brief A class that functions as a sample buffer.
- * @details You can use this to insert samples and use the get function to get a sample of the past.
+ * @brief      A class that functions as a sample buffer.
+ * @details    You can use this to insert samples and use the get function to
+ *             get a sample from the past.
  *
- * @tparam type Type of sample or even object that needs to be stored.
- * @tparam size Size of how big the history buffer is.
+ * @tparam     type  Type of sample that needs to be stored.
+ * @tparam     size  Size of how big the history buffer is.
  */
 template<typename type, size_t size>
 class CircularDelay{
@@ -176,7 +195,7 @@ public:
 		type* data_ = nullptr;
 		type* ptr_ = nullptr;
 	};
-	void push(type input);
+	type push(type input);
 	type get(size_t delay);
 	iterator end(){return setIterator;}
 	iterator begin(){
@@ -196,7 +215,10 @@ private:
 };
 
 /**
- * @brief Constructor that initializes that buffer and its set index.
+ * @brief      Constructor that initializes that buffer and its set index.
+ *
+ * @tparam     type  Type of sample that needs to be stored.
+ * @tparam     size  Size of how big the history buffer is.
  */
 template<typename type, size_t size>
 CircularDelay<type, size>::CircularDelay(){
@@ -206,22 +228,32 @@ CircularDelay<type, size>::CircularDelay(){
 }
 
 /**
- * @brief With this function you can insert a new sample into the buffer.
+ * @brief      With this function you can insert a new sample into the buffer.
  *
- * @param input Sample to push into.
+ * @param      input  Sample to push into.
+ *
+ * @tparam     type   Type of sample that needs to be stored.
+ * @tparam     size   Size of how big the history buffer is.
+ *
+ * @return     Value that has been pushed.
  */
 template<typename type, size_t size>
-void CircularDelay<type, size>::push(type input){
+type CircularDelay<type, size>::push(type input){
 	*setIterator = input;
 	setIterator++;
+	return input;
 }
 
 /**
- * @brief With this function you can retrieve a sample from the past.
- * @details Maximum delay is the size of the CircularDelay - 1.
+ * @brief      With this function you can retrieve a sample from the past.
+ * @details    Maximum delay is the size of the CircularDelay - 1.
  *
- * @param delay How many samples you ago you want to get.
- * @return The sample of delay ago.
+ * @param      delay  How many samples you ago you want to get.
+ *
+ * @tparam     type   Type of sample that needs to be stored.
+ * @tparam     size   Size of how big the history buffer is.
+ *
+ * @return     The sample of delay ago.
  */
 template<typename type, size_t size>
 type CircularDelay<type, size>::get(size_t delay){
