@@ -108,10 +108,10 @@ public:
 		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
 		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
 	private:
-		const_iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		const_iterator(const type* data, const type* ptr) : data_(data), ptr_(ptr) { }
 		friend class CircularDelay;
-		type* data_ = nullptr;
-		type* ptr_ = nullptr;
+		const type* data_ = nullptr;
+		const type* ptr_ = nullptr;
 	};
 	class reverse_iterator{
 	public:
@@ -190,13 +190,13 @@ public:
 		bool operator==(const self_type& rhs) { return ptr_ == rhs.ptr_; }
 		bool operator!=(const self_type& rhs) { return ptr_ != rhs.ptr_; }
 	private:
-		const_reverse_iterator(type* data, type* ptr) : data_(data), ptr_(ptr) { }
+		const_reverse_iterator(const type* data, const type* ptr) : data_(data), ptr_(ptr) { }
 		friend class CircularDelay;
-		type* data_ = nullptr;
-		type* ptr_ = nullptr;
+		const type* data_ = nullptr;
+		const type* ptr_ = nullptr;
 	};
 	type push(type input);
-	type get(size_t delay);
+	type get(size_t delay) const;
 	iterator end(){return setIterator;}
 	iterator begin(){
 		iterator it(setIterator);
@@ -206,6 +206,18 @@ public:
 	reverse_iterator rend(){return reverse_iterator(data, setIterator.ptr_);}
 	reverse_iterator rbegin(){
 		reverse_iterator it(data, setIterator.ptr_);
+		++it;
+		return it;
+	}
+	const_iterator cend() const{return setIterator;}
+	const_iterator cbegin() const{
+		const_iterator it(setIterator);
+		++it;
+		return it;
+	}
+	const_reverse_iterator crend() const{return reverse_iterator(data, setIterator.ptr_);}
+	const_reverse_iterator crbegin() const{
+		const_reverse_iterator it(data, setIterator.ptr_);
 		++it;
 		return it;
 	}
@@ -256,9 +268,8 @@ type CircularDelay<type, size>::push(type input){
  * @return     The sample of delay ago.
  */
 template<typename type, size_t size>
-type CircularDelay<type, size>::get(size_t delay){
+type CircularDelay<type, size>::get(size_t delay) const{
 	if(delay >= size + 1)
 		throw(std::domain_error("Tried to get a value that is longer ago than the size of a CircularDelay."));
-	reverse_iterator itRBegin(rbegin());
-	return itRBegin[delay];
+	return crbegin()[delay];
 }
